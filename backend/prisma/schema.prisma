@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id          Int          @id @default(autoincrement())
+  nome        String
+  email       String       @unique
+  senha       String
+
+  formularios Formulario[]
+
+  @@map("usuario")
+}
+
+model Formulario {
+  id            Int            @id @default(autoincrement())
+  data          DateTime
+  usuarioId     Int            @map("usuario_id")
+
+  usuario       Usuario        @relation(fields: [usuarioId], references: [id])
+  movimentacoes Movimentacao[]
+
+  @@map("formulario")
+}
+
+model Movimentacao {
+  id            Int        @id @default(autoincrement())
+  tipo          String
+  quantidade    Int
+  data          DateTime   @map("data_movimentacao")
+  formularioId  Int        @map("formulario_id")
+  produtoId     Int        @map("produto_id")
+
+  formulario    Formulario @relation(fields: [formularioId], references: [id])
+  produto       Produto    @relation(fields: [produtoId], references: [id])
+
+  @@map("movimentacao")
+}
+
+model Produto {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  estoque       Int
+  quantidade    Int
+
+  movimentacoes Movimentacao[]
+
+  @@map("produtos")
+}
